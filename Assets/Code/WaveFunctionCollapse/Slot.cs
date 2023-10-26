@@ -5,16 +5,26 @@ using System.Linq;
 using UnityEngine;
 
 public class Slot {
+	/// <summary>
+	/// Represents the 3D position of the slot.
+	/// </summary>
 	public Vector3Int Position;
 
 	// List of modules that can still be placed here
+	// (defined in the constructor)
 	public ModuleSet Modules;
 
 	// Direction -> Module -> Number of items in this.getneighbor(direction).Modules that allow this module as a neighbor
 	public short[][] ModuleHealth;
 
+	// Reference to the map class
 	private AbstractMap map;
-
+	
+	/// <summary>
+	/// The Module placed inside this slot.
+	/// <remarks>If not null, then this means the slot has been collapsed, a module placed inside.
+	/// </remarks>
+	/// </summary>
 	public Module Module;
 
 	public GameObject GameObject;
@@ -25,6 +35,10 @@ public class Slot {
 		}
 	}
 
+	/*
+	 * Looks to be only used in the 'Tree Placer' logic, which (I think) just places a tree on this `Slot`'s `Module`
+	 * when the `Module` has been placed in the game world.
+	 */
 	public bool ConstructionComplete {
 		get {
 			return this.GameObject != null || (this.Collapsed && !this.Module.Prototype.Spawn);
@@ -45,24 +59,43 @@ public class Slot {
 		this.Modules = new ModuleSet(prototype.Modules);
 	}
 
+	/// <summary>
+	/// Returns a neighboring `Slot` in the provided direction.
+	/// </summary>
+	/// <param name="direction"></param>
+	/// <returns></returns>
 	// TODO only look up once and then cache???
 	public Slot GetNeighbor(int direction) {
 		return this.map.GetSlot(this.Position + Orientations.Direction[direction]);
 	}
 
 	public void Collapse(Module module) {
+		// Check if this slot already has a `Module` assigned/placed within it
 		if (this.Collapsed) {
 			Debug.LogWarning("Trying to collapse already collapsed slot.");
 			return;
 		}
-
+	
+		/*
+		 * What is this HistoryItem? It takes a `Slot` as a param which it stores as a field inside the class... It also
+		 * instantiates another field `RemovedModules`, which is a Dictionary (Vector3Int to ModuleSet). This same field
+		 * is accessed down later in this class in `RemoveModules` as well, so there's some connection here.
+		 */
 		this.map.History.Push(new HistoryItem(this));
-
+		
+		// Assign this slot's `Module` to the one provided from the method param 
 		this.Module = module;
+		/*
+		 * Define local var and create a copied instance of this slot's `Modules` field (note that this includes the
+		 * just-assigned `Module` which now occupied this slot.
+		 */
 		var toRemove = new ModuleSet(this.Modules);
+		// Subtract the `Module` we just assigned to the slot (so that it doesn't get removed as well)
 		toRemove.Remove(module);
+		// Remove all other modules, except the one that occupies this slot
 		this.RemoveModules(toRemove);
-
+		
+		// Notify the map that this slot is now collapsed!
 		this.map.NotifySlotCollapsed(this);
 	}
 	
