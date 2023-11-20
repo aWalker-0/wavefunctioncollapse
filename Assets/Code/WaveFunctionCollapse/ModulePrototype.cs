@@ -5,11 +5,24 @@ using UnityEngine;
 using System.Linq;
 using System;
 
+// I'm pretty sure this ModulePrototype is closely related to the actual 3D models that we use to display the city
+// From just the class variables alone, it appears to be the class which represents the individual piece/tile 
 public class ModulePrototype : MonoBehaviour {
+	
+	/// <summary>
+	/// This `FaceDetails` class is what represents each of the 6 faces on the module cube, and defines things like if
+	/// the face is walkable, what other type of face it is connected to it, and other variables which specify its
+	/// neighbors.
+	/// </summary>
 	[System.Serializable]
 	public abstract class FaceDetails {
+		// This is the variable that makes the red lines show up when viewing the "Prototypes" prefab!
+		// I think having this variable set to true means that this face will always be walkable? Idk yet
 		public bool Walkable;
 
+		/// <summary>
+		/// Holds an integer which represents the other face this face is currently paired with.
+		/// </summary>
 		public int Connector;
 
 		public virtual void ResetConnector() {
@@ -20,16 +33,21 @@ public class ModulePrototype : MonoBehaviour {
 
 		public bool EnforceWalkableNeighbor = false;
 
+		// This variable is set next to a window, so I think that when it is set to true, it means to render through the wall?
 		public bool IsOcclusionPortal = false;
 	}
 
 	[System.Serializable]
 	public class HorizontalFaceDetails : FaceDetails {
+		/// <summary>
+		/// This variable represents if the face is symmetrical. For example, the 5th module cube in the "Prototypes"
+		/// prefab has a symmetrical wall on its 'Left' side.
+		/// </summary>
 		public bool Symmetric;
 		public bool Flipped;
 
 		public override string ToString() {
-			return this.Connector.ToString() + (this.Symmetric ? "s" : (this.Flipped ? "F" : ""));
+			return this.Connector.ToString() + (this.Symmetric ? "sym" : (this.Flipped ? "flip" : ""));
 		}
 
 		public override void ResetConnector() {
@@ -59,6 +77,7 @@ public class ModulePrototype : MonoBehaviour {
 	public bool Spawn = true;
 	public bool IsInterior = false;
 
+	// This defines each direction's face data class, which are also defined above
 	public HorizontalFaceDetails Left;
 	public VerticalFaceDetails Down;
 	public HorizontalFaceDetails Back;
@@ -165,6 +184,11 @@ public class ModulePrototype : MonoBehaviour {
 
 	void Update() { }
 
+	/// <summary>
+	/// Resets this ModulePrototype's directional FaceDetails properties with new empty ones. Also, for each directional
+	/// FaceDetails object, it also reset's that FaceDetail's ExcludedNeighbours property with a new empty
+	/// ModulePrototype array.
+	/// </summary>
 	void Reset() {
 		this.Up = new VerticalFaceDetails();
 		this.Down = new VerticalFaceDetails();

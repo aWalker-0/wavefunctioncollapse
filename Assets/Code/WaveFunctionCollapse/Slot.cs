@@ -15,6 +15,9 @@ public class Slot {
 	public ModuleSet Modules;
 
 	// Direction -> Module -> Number of items in this.getneighbor(direction).Modules that allow this module as a neighbor
+	/// <summary>
+	/// 
+	/// </summary>
 	public short[][] ModuleHealth;
 
 	// Reference to the map class
@@ -22,7 +25,8 @@ public class Slot {
 	
 	/// <summary>
 	/// The Module placed inside this slot.
-	/// <remarks>If not null, then this means the slot has been collapsed, a module placed inside.
+	/// <remarks>
+	/// If not null, then this means the slot has been collapsed, a module placed inside.
 	/// </remarks>
 	/// </summary>
 	public Module Module;
@@ -46,8 +50,11 @@ public class Slot {
 	}
 
 	public Slot(Vector3Int position, AbstractMap map) {
+		// Define this Slot's position in space/the grid
 		this.Position = position;
+		// Define the map (which the Slot exists in)
 		this.map = map;
+		// 
 		this.ModuleHealth = map.CopyInititalModuleHealth();
 		this.Modules = new ModuleSet(initializeFull: true);
 	}
