@@ -119,8 +119,9 @@ public class ModuleSet : ICollection<Module> {
 	}
 
 	/// <summary>
-	/// Creates a copy of the provided ModuleSet.
+	/// Initializes a new instance of the <see cref="ModuleSet"/> class by copying data from an existing instance.
 	/// </summary>
+	/// <param name="source">The source <see cref="ModuleSet"/> instance to copy data from.</param>
 	public ModuleSet(ModuleSet source) {
 		this.data = source.data.ToArray();
 		this.entropy = source.Entropy;
@@ -128,8 +129,10 @@ public class ModuleSet : ICollection<Module> {
 	}
 
 	/// <summary>
-	/// Creates a new ModuleSet instance from a source enumerable of modules.
+	/// Creates a new ModuleSet from a collection of Module objects.
 	/// </summary>
+	/// <param name="source">An <code>IEnumerableModule</code> collection to be converted into a ModuleSet.</param>
+	/// <returns>A new ModuleSet containing all the Module objects from the source collection.</returns>
 	public static ModuleSet FromEnumerable(IEnumerable<Module> source) {
 		var result = new ModuleSet();
 		foreach (var module in source) {
